@@ -18,5 +18,9 @@ main.elf: ${COMMON_OBJECTS} main.o lcdgame.o stateMachines.o \
 lcdgame.o: lcdgame.c lcdgame.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+# Rule to load the compiled program onto the MSP430
+load: main.elf
+	msp430loader.sh main.elf
+
 clean:
 	rm -f *.o *.elf
