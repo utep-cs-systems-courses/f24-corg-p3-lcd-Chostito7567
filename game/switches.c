@@ -42,6 +42,15 @@ void switch_interrupt_handler() {
         play_jingle4();
         led_state = 3;
     }
+
+    // Indicate that a switch has changed state
+    switch_state_changed = 1;
+
     led_changed = 1;
     led_update();
+}
+
+// Helper function to check if a specific switch is pressed
+int is_switch_pressed(int switch_mask) {
+    return switches & switch_mask;
 }
