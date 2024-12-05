@@ -1,29 +1,16 @@
 #include <msp430.h>
-#include "led.h"
-#include "stateMachines.h"
-#include "buzzer.h"
+#include "lcdgame.h"
 #include "switches.h"
-#include "libTimer.h"
+#include "buzzer.h"
 #include "lcdutils.h"
-#include "lcddraw.h"
-#include "lcdgame.h"  // Include game logic functions
 
 void main() {
-    // Timer
-    configureClocks();          // Start Lib Timer
+    configureClocks();  // Configure system clocks
+    lcd_init();         // Initialize LCD
+    switch_init();      // Initialize switches
+    buzzer_init();      // Initialize buzzer
 
-    // Initialize 
-    switch_init();              // Setup Switches
-    buzzer_init();              // Initialize Buzzer
-    led_init();                 // Initialize LEDs
+    lcd_game_play();    // Start the game
 
-    // LCD Initialization and Game Start
-    lcd_game_init();            // Initialize the LCD for the game
-    lcd_game_play();            // Start the game loop
-
-    // Watchdog Timer
-    enableWDTInterrupts();      // Enable Watchdog Timer
-
-    // Power off CPU (enters low-power mode)
-    or_sr(0x18);
+    or_sr(0x18);        // Power off CPU (low power mode)
 }
