@@ -1,7 +1,7 @@
-# makfile configuration
+# Makefile configuration
 CPU             	= msp430g2553
 CFLAGS          	= -mmcu=${CPU} -Os -I../h
-LDFLAGS         	= -L../lib -L/opt/ti/msp430_gcc/include/ 
+LDFLAGS         	= -L../lib -L/opt/ti/msp430_gcc/include/
 
 # switch the compiler (for the internal make rules)
 CC              = msp430-elf-gcc
@@ -23,6 +23,10 @@ lcdgame.o: lcdgame.c lcdgame.h
 
 ../lcdLib/lcddraw.o: ../lcdLib/lcddraw.c ../lcdLib/lcddraw.h
 	${CC} ${CFLAGS} -c $< -o $@
+
+# Load rule to upload the program to the MSP430
+load: main.elf
+	msp430loader.sh main.elf
 
 clean:
 	rm -f *.o *.elf
