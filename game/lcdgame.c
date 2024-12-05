@@ -1,8 +1,11 @@
+#include <msp430.h>
+#include <stdio.h>
+#include "switches.h"
 #include "lcdutils.h"
 #include "lcddraw.h"
 #include "buzzer.h"
-#include "switches.h"
-#include <stdlib.h>
+
+extern int switches;  // Use switches updated by interrupt handler
 
 // Game variables
 static int lives = 3;
