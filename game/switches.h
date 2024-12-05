@@ -1,7 +1,5 @@
-#ifndef SWITCHES_INCLUDED
-#define SWITCHES_INCLUDED
-
-#include <msp430.h>  // Include this to define BIT0, BIT1, BIT2, and BIT3
+#ifndef SWITCHES_H
+#define SWITCHES_H
 
 #define SW1 BIT0
 #define SW2 BIT1
@@ -9,10 +7,9 @@
 #define SW4 BIT3
 #define SWITCHES (SW1 | SW2 | SW3 | SW4)
 
-// Declare the global variable
 extern int switches;
 
 void switch_init();
 void switch_interrupt_handler();
 
-#endif // SWITCHES_INCLUDED
+#endif
