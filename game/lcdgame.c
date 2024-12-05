@@ -3,6 +3,7 @@
 #include "buzzer.h"
 #include "switches.h"
 #include <stdlib.h>  // For rand()
+#include <stdio.h>   // For sprintf
 
 // Game variables
 static int sequence[10];        // Store the sequence (max length 10)
@@ -36,6 +37,7 @@ void draw_game_info() {
 
 // Display the prompt sequence
 void display_sequence() {
+    clearScreen(COLOR_BLUE);        // Clear screen
     draw_game_info();               // Draw game info
     drawRectOutline(30, 50, 60, 40, COLOR_GREEN); // Rectangle for sequence
 
@@ -63,9 +65,13 @@ void lcd_game_play() {
     while (lives > 0) {
         if (redraw_screen) {
             clearScreen(COLOR_BLUE);
-            display_sequence(); // Show the prompt sequence
+            draw_game_info();          // Draw lives and round
+            drawRectOutline(30, 50, 60, 40, COLOR_GREEN); // Draw rectangle
             redraw_screen = 0;
         }
+
+        // Show the sequence to the user
+        display_sequence();
 
         // Wait for user input
         user_input_index = 0;
@@ -102,6 +108,7 @@ void lcd_game_play() {
             __delay_cycles(300000); // Debounce delay
         }
 
+        // Proceed to the next round if input was correct
         if (lives > 0 && user_input_index == sequence_length) {
             sequence[sequence_length++] = rand() % 4 + 1; // Add new number
             round++;                                      // Increment round
