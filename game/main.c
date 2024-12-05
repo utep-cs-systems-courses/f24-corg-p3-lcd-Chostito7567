@@ -1,32 +1,28 @@
 #include <msp430.h>
-#include "lcdutils.h"
-#include "lcddraw.h"
-#include "lcdgame.h"
+#include "led.h"
+#include "stateMachines.h"
+#include "buzzer.h"
+#include "switches.h"
+#include "libTimer.h"
+#include "lcdgame.h"  // Include lcdgame for LCD functions
 
-void update_shape(); // Original functionality
+void main()
+{
+    // Timer
+    configureClocks();          // Start Lib Timer
 
-void main() {
-    P1DIR |= BIT6;              /**< Green LED on when CPU on */
-    P1OUT |= BIT6;
+    // Initialize 
+    switch_init();              // Setup Switches
+    buzzer_init();              // Call Speakers
+    led_init();                 // Call LEDs
 
-    configureClocks();          // Set up system clocks
+    // LCD Initialization
     lcd_game_init();            // Initialize the LCD
-    switch_init();              // Initialize switches
+    lcd_draw_square();          // Draw a square on the LCD
 
-    enableWDTInterrupts();      // Enable periodic interrupts
-    or_sr(0x8);                 // Enable global interrupts
+    // Watchdog
+    enableWDTInterrupts();      // Enable Watchdog Timer
 
-    clearScreen(COLOR_BLUE);    // Clear screen to blue
-
-    lcd_draw_square();          // Draw a static square
-
-    while (1) {                 // Main loop
-        if (redrawScreen) {     // Check if the screen needs an update
-            redrawScreen = 0;
-            update_shape();     // Original functionality
-        }
-        P1OUT &= ~BIT6;         // Turn off LED
-        or_sr(0x10);            // CPU OFF
-        P1OUT |= BIT6;          // Turn on LED
-    }
+    // Power off CPU
+    or_sr(0x18);
 }
