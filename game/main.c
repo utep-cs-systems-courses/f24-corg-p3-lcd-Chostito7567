@@ -1,16 +1,18 @@
 #include <msp430.h>
-#include "lcdgame.h"
-#include "switches.h"
+#include "led.h"
 #include "buzzer.h"
-#include "lcdutils.h"
+#include "switches.h"
+#include "lcdgame.h"
+#include "libTimer.h"
 
 void main() {
-    configureClocks();  // Configure system clocks
-    lcd_init();         // Initialize LCD
-    switch_init();      // Initialize switches
-    buzzer_init();      // Initialize buzzer
+    configureClocks();
+    switch_init();
+    buzzer_init();
+    lcd_init();
 
-    lcd_game_play();    // Start the game
+    enableWDTInterrupts(); // Enable watchdog timer for periodic interrupts
+    or_sr(0x18);           // CPU off, GIE on
 
-    or_sr(0x18);        // Power off CPU (low power mode)
+    lcd_game_play();       // Start the game
 }
