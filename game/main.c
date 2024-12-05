@@ -1,18 +1,25 @@
 #include <msp430.h>
-#include "led.h"
-#include "buzzer.h"
 #include "switches.h"
-#include "lcdgame.h"
+#include "lcdutils.h"
+#include "lcddraw.h"
+#include "buzzer.h"
 #include "libTimer.h"
 
 void main() {
     configureClocks();
+    lcd_init();
     switch_init();
     buzzer_init();
-    lcd_init();
 
-    enableWDTInterrupts(); // Enable watchdog timer for periodic interrupts
-    or_sr(0x18);           // CPU off, GIE on
+    enableWDTInterrupts();
+    or_sr(0x18);  // CPU off, GIE on
 
-    lcd_game_play();       // Start the game
+    while (1) {
+        // Display which switch is pressed
+        char buffer[16];
+        sprintf(buffer, "SW: %d", switches);
+        clearScreen(COLOR_BLUE);
+        drawString5x7(10, 100, buffer, COLOR_WHITE, COLOR_BLUE);
+        __delay_cycles(500000);
+    }
 }
