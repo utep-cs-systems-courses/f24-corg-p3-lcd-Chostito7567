@@ -13,7 +13,7 @@ all: main.elf
 main.elf: ${COMMON_OBJECTS} main.o lcdgame.o stateMachines.o \
           led.o wdInterruptHandler.o p2_interrupt_handler.o \
           switches.o buzzer.o ../timerLib/libTimer.a ../lcdLib/lcdutils.o \
-          ../lcdLib/lcddraw.o ../lcdLib/font_5x7.o
+          ../lcdLib/lcddraw.o ../lcdLib/font-5x7.o
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
 lcdgame.o: lcdgame.c lcdgame.h
@@ -25,7 +25,7 @@ lcdgame.o: lcdgame.c lcdgame.h
 ../lcdLib/lcddraw.o: ../lcdLib/lcddraw.c ../lcdLib/lcddraw.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-../lcdLib/font_5x7.o: ../lcdLib/font_5x7.c
+../lcdLib/font-5x7.o: ../lcdLib/font-5x7.c
 	${CC} ${CFLAGS} -c $< -o $@
 
 # Load rule to upload the program to the MSP430
