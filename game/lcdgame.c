@@ -25,14 +25,6 @@ static int lives = 3;
 static int round = 1;
 static int current_step = 0; // For SHOW_SEQUENCE
 
-// Function prototypes
-void state_init();
-void state_start();
-void state_show_sequence();
-void state_wait_input();
-void state_next_round();
-void state_game_over();
-
 void lcd_game_play() {
     while (1) {
         switch (current_state) {
@@ -48,6 +40,7 @@ void lcd_game_play() {
 
 void state_init() {
     clearScreen(COLOR_BLUE);
+    drawString5x7(10, 10, "INIT", COLOR_WHITE, COLOR_BLUE); // Debug
     srand(1234);  // Seed random number generator
     lives = 3;
     round = 1;
@@ -64,6 +57,7 @@ void state_start() {
     sprintf(buffer, "Round: %d", round);
     drawString5x7(screenWidth - 50, 5, buffer, COLOR_WHITE, COLOR_BLUE);
     current_step = 0;
+    __delay_cycles(2000000); // Delay before transitioning
     current_state = SHOW_SEQUENCE;
 }
 
@@ -73,6 +67,7 @@ void state_show_sequence() {
         sprintf(num, "%d", sequence[current_step]);
         drawString5x7(screenWidth / 2 - 5, screenHeight / 2, num, COLOR_WHITE, COLOR_BLUE);
 
+        // Play corresponding jingle
         switch (sequence[current_step]) {
             case 1: play_jingle1(); break;
             case 2: play_jingle2(); break;
@@ -80,7 +75,7 @@ void state_show_sequence() {
             case 4: play_jingle4(); break;
         }
 
-        __delay_cycles(1000000);
+        __delay_cycles(2000000); // Delay between numbers
         clearScreen(COLOR_BLUE);
         current_step++;
     } else {
@@ -90,48 +85,35 @@ void state_show_sequence() {
 }
 
 void state_wait_input() {
+    // Wait for user to press a button
     if (switches & SW1) {
         play_jingle1();
-        if (sequence[user_input_index++] != 1) {
-            lives--;
-            current_state = NEXT_ROUND;
-            return;
-        }
+        if (sequence[user_input_index++] != 1) lives--;
     } else if (switches & SW2) {
         play_jingle2();
-        if (sequence[user_input_index++] != 2) {
-            lives--;
-            current_state = NEXT_ROUND;
-            return;
-        }
+        if (sequence[user_input_index++] != 2) lives--;
     } else if (switches & SW3) {
         play_jingle3();
-        if (sequence[user_input_index++] != 3) {
-            lives--;
-            current_state = NEXT_ROUND;
-            return;
-        }
+        if (sequence[user_input_index++] != 3) lives--;
     } else if (switches & SW4) {
         play_jingle4();
-        if (sequence[user_input_index++] != 4) {
-            lives--;
-            current_state = NEXT_ROUND;
-            return;
-        }
+        if (sequence[user_input_index++] != 4) lives--;
     }
 
+    // Check game over
+    if (lives <= 0) {
+        current_state = GAME_OVER;
+        return;
+    }
+
+    // If user completes sequence
     if (user_input_index == sequence_length) {
         current_state = NEXT_ROUND;
     }
 }
 
 void state_next_round() {
-    if (lives <= 0) {
-        current_state = GAME_OVER;
-        return;
-    }
-
-    sequence[sequence_length++] = rand() % 4 + 1;
+    sequence[sequence_length++] = rand() % 4 + 1; // Add new number to sequence
     round++;
     current_state = START;
 }
@@ -139,5 +121,5 @@ void state_next_round() {
 void state_game_over() {
     clearScreen(COLOR_RED);
     drawString5x7(30, 70, "GAME OVER", COLOR_WHITE, COLOR_RED);
-    while (1); // Halt execution
+    while (1); // Stop execution
 }
