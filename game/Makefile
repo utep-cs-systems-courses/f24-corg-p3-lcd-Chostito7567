@@ -12,15 +12,17 @@ all: main.elf
 # additional rules for files
 main.elf: ${COMMON_OBJECTS} main.o lcdgame.o stateMachines.o \
           led.o wdInterruptHandler.o p2_interrupt_handler.o \
-          switches.o buzzer.o ../timerLib/libTimer.a
+          switches.o buzzer.o ../timerLib/libTimer.a ../lcdLib/lcdutils.o ../lcdLib/lcddraw.o
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
 lcdgame.o: lcdgame.c lcdgame.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-# Rule to load the compiled program onto the MSP430
-load: main.elf
-	msp430loader.sh main.elf
+../lcdLib/lcdutils.o: ../lcdLib/lcdutils.c ../lcdLib/lcdutils.h
+	${CC} ${CFLAGS} -c $< -o $@
+
+../lcdLib/lcddraw.o: ../lcdLib/lcddraw.c ../lcdLib/lcddraw.h
+	${CC} ${CFLAGS} -c $< -o $@
 
 clean:
 	rm -f *.o *.elf
