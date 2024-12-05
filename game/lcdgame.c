@@ -7,11 +7,19 @@ void lcd_game_init() {
     clearScreen(COLOR_BLUE);     // Clear the screen with a blue background
 }
 
-// Draw a green square in the center of the screen
-void lcd_draw_square() {
-    u_char topLeftX = screenWidth / 2 - 10;  // Center horizontally
-    u_char topLeftY = screenHeight / 2 - 10; // Center vertically
-    u_char sideLength = 20;                  // Square side length
+// Draw a rectangle and write text inside
+void lcd_draw_rectangle_with_text() {
+    // Rectangle properties
+    u_char topLeftX = screenWidth / 4;          // Left edge
+    u_char topLeftY = screenHeight / 4;         // Top edge
+    u_char rectWidth = screenWidth / 2;         // Rectangle width
+    u_char rectHeight = screenHeight / 4;       // Rectangle height
 
-    fillRectangle(topLeftX, topLeftY, sideLength, sideLength, COLOR_GREEN);
+    // Draw rectangle
+    drawRectOutline(topLeftX, topLeftY, rectWidth, rectHeight, COLOR_GREEN);
+
+    // Write text inside the rectangle
+    u_char textX = topLeftX + 10;               // Position text slightly offset from the left edge
+    u_char textY = topLeftY + rectHeight / 2;   // Center text vertically
+    drawString5x7(textX, textY, "1,2,3,4", COLOR_WHITE, COLOR_BLUE);
 }
