@@ -31,6 +31,6 @@ $(TARGET): $(OBJ)
 clean:
 	rm -f $(OBJ) $(TARGET)
 
-# Flash the program onto the MSP430
-flash: $(TARGET)
-	mspdebug rf2500 "prog $(TARGET)"
+# Load the program onto the MSP430
+load: $(TARGET)
+	mspdebug rf2500 "load $(TARGET)"
