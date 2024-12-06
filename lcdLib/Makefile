@@ -1,29 +1,36 @@
-all: libLcd.a lcddemo.elf
+# Compiler and linker
+CC = msp430-gcc
 
-CPU             = msp430g2553
-CFLAGS          = -mmcu=${CPU} -Os -I../h 
-LDFLAGS 	= -L/opt/ti/msp430_gcc/include -L../lib 
-#switch the compiler (for the internal make rules)
-CC              = msp430-elf-gcc
-AS              = msp430-elf-as
-AR              = msp430-elf-ar
+# MCU model - replace with your specific MSP430 model
+MCU = msp430g2553
 
-libLcd.a: font-11x16.o font-5x7.o font-8x12.o lcdutils.o lcddraw.o
-	$(AR) crs $@ $^
+# Compiler flags
+CFLAGS = -mmcu=$(MCU) -O2 -Wall -I.
 
-lcddraw.o: lcddraw.c lcddraw.h lcdutils.h
-lcdutils.o: lcdutils.c lcdutils.h
+# Source files
+SRC = main.c lcdutils.c lcddraw.c font-5x7.c font-8x12.c font-11x16.c
 
-install: libLcd.a
-	mkdir -p ../h ../lib
-	mv $^ ../lib
-	cp *.h ../h
+# Object files (derived from source files)
+OBJ = $(SRC:.c=.o)
 
+# Output file
+TARGET = simon_game.elf
+
+# Default rule: build the target
+all: $(TARGET)
+
+# Link the object files to create the final executable
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Compile each source file into an object file
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+# Clean up build artifacts
 clean:
-	rm -f libLcd.a *.o *.elf
+	rm -f $(OBJ) $(TARGET)
 
-lcddemo.elf: lcddemo.o libLcd.a 
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -lTimer 
-
-load: lcddemo.elf
-	msp430loader.sh $^
+# Flash the program onto the MSP430
+flash: $(TARGET)
+	mspdebug rf2500 "prog $(TARGET)"
