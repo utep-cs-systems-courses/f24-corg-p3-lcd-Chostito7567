@@ -1,24 +1,15 @@
-
 #include <msp430.h>
-#include "led.h"
-#include "stateMachines.h"
-#include "buzzer.h"
-#include "switches.h"
 #include "libTimer.h"
+#include "lcdutils.h"
+#include "lcddraw.h"
+#include "lcdgame.h"  // Include the lcdgame header for new functionality
 
-void main()
-{
-    // Timer
-    configureClocks();          // Start Lib Timer
+void main() {
+    configureClocks();        // Start Lib Timer
+    lcd_init();               // Initialize the LCD
+    clearScreen(COLOR_BLUE);  // Clear screen to blue
 
-    // Initialize 
-    switch_init();              // Setup Switches
-    buzzer_init();              // Call Speakers
-    led_init();                 // Call LEDs
+    lcd_game_display();       // Add this call to display the square and random numbers
 
-    // Watchdog
-    enableWDTInterrupts();      // Enable Watchdog Timer
-
-    // Power off CPU
-    or_sr(0x18);
+    or_sr(0x18);              // Keep CPU off, GIE on
 }
