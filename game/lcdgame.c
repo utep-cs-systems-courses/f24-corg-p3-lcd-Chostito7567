@@ -2,6 +2,7 @@
 #include "lcdutils.h"
 #include "lcddraw.h"
 #include <stdlib.h>  // For rand()
+#include <msp430.h>  // For MSP430 registers and definitions
 
 #define COLOR_ORANGE 0xFC00  // Correct orange color
 
@@ -11,9 +12,8 @@ void lcd_game_init() {
     lcd_init();                  // Initialize the LCD
     clearScreen(COLOR_BLUE);     // Clear the screen with blue
 
-    // Use a basic pseudo-random seed using the Timer's counter value
-    WDTCTL = WDTPW + WDTHOLD;    // Stop watchdog timer
-    srand((unsigned int) TA0R);  // Use Timer A0's counter as seed
+    // Use the Timer_A counter for random seed
+    srand((unsigned int) TA0CCR0);  // Use Timer_A capture/compare register as seed
 }
 
 void lcd_draw_square() {
