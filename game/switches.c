@@ -1,9 +1,9 @@
 #include <msp430.h>
 #include "switches.h"
-#include "lcdutils.h"
-#include "lcddraw.h"
+#include "led.h"
+#include "buzzer.h"
 
-int switches = 0;
+char switch_state_down, switch_state_changed;
 
 static char switch_update_interrupt_sense() {
     char p2val = P2IN;
@@ -22,10 +22,20 @@ void switch_init() {
 
 void switch_interrupt_handler() {
     char p2val = switch_update_interrupt_sense();
-    switches = ~p2val & SWITCHES; // Update global switches variable
 
-    // Debugging: Display detected switch
-    char buffer[16];
-    sprintf(buffer, "SW: %d", switches);
-    drawString5x7(10, 100, buffer, COLOR_WHITE, COLOR_BLUE);
+    if (!(p2val & SW1)) {
+        play_jingle1();
+        led_state = 0;
+    } else if (!(p2val & SW2)) {
+        play_jingle2();
+        led_state = 1;
+    } else if (!(p2val & SW3)) {
+        play_jingle3();
+        led_state = 2;
+    } else if (!(p2val & SW4)) {
+        play_jingle4();
+        led_state = 3;
+    }
+    led_changed = 1;
+    led_update();
 }
