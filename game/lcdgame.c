@@ -21,7 +21,7 @@ void lcd_draw_square() {
 void lcd_display_numbers() {
     char numbers[5];
     for (int i = 0; i < 4; i++) {
-        numbers[i] = (rand() % 4) + 1;  // Generate random numbers from 1-4
+        numbers[i] = (rand() % 4) + '1';  // Generate random numbers from 1-4
     }
     numbers[4] = '\0';  // Null-terminate the array for display
 
