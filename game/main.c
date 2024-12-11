@@ -4,9 +4,7 @@
 #include "buzzer.h"
 #include "switches.h"
 #include "libTimer.h"
-#include "lcdutils.h"  // Add this for LCD functionality
-#include "lcddraw.h"   // Add this for drawing shapes
-#include "lcdgame.h"   // Include lcdgame for the new feature
+#include "lcdgame.h"
 
 void main()
 {
@@ -18,16 +16,15 @@ void main()
     buzzer_init();              // Call Speakers
     led_init();                 // Call LEDs
 
-    // Initialize LCD
-    lcd_init();                 // Initialize the LCD
-    clearScreen(COLOR_BLUE);    // Clear the screen to blue
-
-    // Display the square and numbers
-    lcd_game_display();         // Add this function to display the square and random numbers
+    // LCD
+    lcd_game_init();            // Initialize the LCD
 
     // Watchdog
     enableWDTInterrupts();      // Enable Watchdog Timer
 
-    // Power off CPU
-    or_sr(0x18);
+    while (1) {
+        lcd_draw_square();      // Draw the orange square
+        lcd_game_display();     // Display the random array of numbers
+        __delay_cycles(1000000); // Delay for a second to observe changes
+    }
 }
