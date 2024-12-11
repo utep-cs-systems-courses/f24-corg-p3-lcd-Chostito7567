@@ -12,8 +12,9 @@ void lcd_game_init() {
     lcd_init();                  // Initialize the LCD
     clearScreen(COLOR_BLUE);     // Clear the screen with blue
 
-    // Use the Timer_A counter for random seed
-    srand((unsigned int) TA0CCR0);  // Use Timer_A capture/compare register as seed
+    // Random seed using Timer_A and switches state for better randomness
+    unsigned int seed = (TA0CCR0 ^ P2IN) & 0xFFFF;  // Combine Timer_A value and switches
+    srand(seed);
 }
 
 void lcd_draw_square() {
