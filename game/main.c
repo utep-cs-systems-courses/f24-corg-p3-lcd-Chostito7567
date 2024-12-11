@@ -3,8 +3,8 @@
 #include "stateMachines.h"
 #include "buzzer.h"
 #include "switches.h"
-#include "libTimer.h"
 #include "lcdgame.h"
+#include "libTimer.h"
 
 void main()
 {
@@ -15,16 +15,13 @@ void main()
     switch_init();              // Setup Switches
     buzzer_init();              // Call Speakers
     led_init();                 // Call LEDs
+    lcd_game_init();            // Initialize LCD game
 
-    // LCD
-    lcd_game_init();            // Initialize the LCD
+    lcd_game_display();         // Display the square with random numbers
 
     // Watchdog
     enableWDTInterrupts();      // Enable Watchdog Timer
 
-    while (1) {
-        lcd_draw_square();      // Draw the orange square
-        lcd_game_display();     // Display the random array of numbers
-        __delay_cycles(1000000); // Delay for a second to observe changes
-    }
+    // Power off CPU
+    or_sr(0x18);
 }
