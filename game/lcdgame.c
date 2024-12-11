@@ -11,9 +11,9 @@ void lcd_game_init() {
     lcd_init();                  // Initialize the LCD
     clearScreen(COLOR_BLUE);     // Clear the screen with blue
 
-    // Use hardware-specific value for random seed
-    unsigned int seed = TAR;  // Timer A Register (pseudo-random)
-    srand(seed);              // Seed rand() with hardware value
+    // Use a basic pseudo-random seed using the Timer's counter value
+    WDTCTL = WDTPW + WDTHOLD;    // Stop watchdog timer
+    srand((unsigned int) TA0R);  // Use Timer A0's counter as seed
 }
 
 void lcd_draw_square() {
