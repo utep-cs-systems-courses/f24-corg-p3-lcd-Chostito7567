@@ -2,14 +2,16 @@
 #include "lcdutils.h"
 #include "lcddraw.h"
 #include <stdlib.h>  // For rand()
+#include <time.h>    // For seeding rand()
 
-#define COLOR_ORANGE 0xFD20  // Define orange color in 16-bit RGB format
+#define COLOR_ORANGE 0xFC00  // Corrected orange color definition
 
 static unsigned int number_array[4];  // Array to hold random numbers
 
 void lcd_game_init() {
-    lcd_init();           // Initialize the LCD
-    clearScreen(COLOR_BLUE);  // Clear the screen with blue
+    lcd_init();                  // Initialize the LCD
+    clearScreen(COLOR_BLUE);     // Clear the screen with blue
+    srand(time(NULL));           // Seed rand() with current time for true randomness
 }
 
 void lcd_draw_square() {
