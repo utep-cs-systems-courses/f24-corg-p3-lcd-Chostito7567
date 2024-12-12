@@ -1,88 +1,187 @@
 #include <msp430.h>
-#include <stdlib.h>
+#include <libTimer.h>
+#include "lcdutils.h"
+#include "lcddraw.h"
 
-// Define button inputs and states
-#define S1 BIT0
-#define S2 BIT1
-#define S3 BIT2
-#define S4 BIT3
+// WARNING: LCD DISPLAY USES P1.0.  Do not touch!!!
 
-unsigned char safe_wires[4];  // Array to track safe wires
-unsigned char used_wires[4]; // Array to track used wires (1 = disabled)
+#define LED BIT6 /* note that bit zero req'd for display */
 
-// Function prototypes
-void setup_gpio();
-void setup_game();
-void draw_screen();
-void remove_wire(unsigned char wire);
-void red_boom();
-void display_message(const char *message);
+#define SW1 1
+#define SW2 2
+#define SW3 4
+#define SW4 8
 
-int main(void) {
-    WDTCTL = WDTPW | WDTHOLD;  // Stop watchdog timer
-    setup_gpio();
-    setup_game();
+#define SWITCHES 15
 
-    draw_screen();
+char blue = 31, green = 0, red = 31;
+unsigned char step = 0;
 
-    while (1) {
-        if (!(P1IN & S1) && !used_wires[0]) {  // S1 pressed
-            if (safe_wires[0]) remove_wire(0);
-            else red_boom();
-        } else if (!(P1IN & S2) && !used_wires[1]) {  // S2 pressed
-            if (safe_wires[1]) remove_wire(1);
-            else red_boom();
-        } else if (!(P1IN & S3) && !used_wires[2]) {  // S3 pressed
-            if (safe_wires[2]) remove_wire(2);
-            else red_boom();
-        } else if (!(P1IN & S4) && !used_wires[3]) {  // S4 pressed
-            if (safe_wires[3]) remove_wire(3);
-            else red_boom();
-        }
+static char 
+switch_update_interrupt_sense()
+{
+  char p2val = P2IN;
+  /* update switch interrupt to detect changes from current buttons */
+  P2IES |= (p2val & SWITCHES); /* if switch up, sense down */
+  P2IES &= (p2val | ~SWITCHES); /* if switch down, sense up */
+  return p2val;
+}
+
+void 
+switch_init() /* setup switch */
+{  
+  P2REN |= SWITCHES; /* enables resistors for switches */
+  P2IE |= SWITCHES; /* enable interrupts from switches */
+  P2OUT |= SWITCHES; /* pull-ups for switches */
+  P2DIR &= ~SWITCHES; /* set switches' bits for input */
+  switch_update_interrupt_sense();
+}
+
+int switches = 0;
+
+void
+switch_interrupt_handler()
+{
+  char p2val = switch_update_interrupt_sense();
+  switches = ~p2val & SWITCHES;
+}
+
+// axis zero for col, axis 1 for row
+short drawPos[2] = {1,10}, controlPos[2] = {2, 10};
+short colVelocity = 1, colLimits[2] = {1, screenWidth/2};
+
+void
+draw_ball(int col, int row, unsigned short color)
+{
+  fillRectangle(col-1, row-1, 3, 3, color);
+}
+
+void
+screen_update_ball()
+{
+  for (char axis = 0; axis < 2; axis++) 
+    if (drawPos[axis] != controlPos[axis]) /* position changed? */
+      goto redraw;
+  return; /* nothing to do */
+ redraw:
+  draw_ball(drawPos[0], drawPos[1], COLOR_BLUE); /* erase */
+  for (char axis = 0; axis < 2; axis++) 
+    drawPos[axis] = controlPos[axis];
+  draw_ball(drawPos[0], drawPos[1], COLOR_WHITE); /* draw */
+}
+
+short redrawScreen = 1;
+u_int controlFontColor = COLOR_GREEN;
+
+int exploded = 0;
+
+void boom_effect()
+{
+  static int boom_toggle = 0;
+
+  clearScreen(boom_toggle ? COLOR_RED : COLOR_BLACK);
+  drawString5x7(screenWidth / 2 - 15, screenHeight / 2, "BOOM!", COLOR_WHITE, boom_toggle ? COLOR_RED : COLOR_BLACK);
+  boom_toggle = !boom_toggle;
+}
+
+void wdt_c_handler()
+{
+  static int secCount = 0;
+
+  secCount++;
+  if (secCount >= 25) { /* 10/sec */
+    if (exploded) {
+      boom_effect();
+      return; // Stop other updates when exploded
     }
-}
 
-void setup_gpio() {
-    P1DIR &= ~(S1 | S2 | S3 | S4); // Set S1–S4 as input
-    P1REN |= S1 | S2 | S3 | S4;    // Enable pull-up/down resistors
-    P1OUT |= S1 | S2 | S3 | S4;    // Set resistors to pull-up
-}
-
-void setup_game() {
-    // Initialize all wires as unused
-    for (unsigned char i = 0; i < 4; i++) {
-        used_wires[i] = 0;
+    { /* move ball */
+      short oldCol = controlPos[0];
+      short newCol = oldCol + colVelocity;
+      if (newCol <= colLimits[0] || newCol >= colLimits[1])
+        colVelocity = -colVelocity;
+      else
+        controlPos[0] = newCol;
     }
 
-    // Randomly select one safe wire
-    unsigned char safe_index = rand() % 4;
-    for (unsigned char i = 0; i < 4; i++) {
-        safe_wires[i] = (i == safe_index) ? 1 : 0;
+    { /* update hourglass */
+      if (switches & SW3) green = (green + 1) % 64;
+      if (switches & SW2) blue = (blue + 2) % 32;
+      if (switches & SW1) red = (red - 3) % 32;
+      if (step <= 30)
+        step++;
+      else
+        step = 0;
+      secCount = 0;
     }
+    if (switches & SW4) { 
+      exploded = 1; // Trigger explosion
+      return;
+    }
+    redrawScreen = 1;
+  }
 }
 
-void draw_screen() {
-    // Placeholder for drawing colored rectangles on the LCD
-    // Example: draw a rectangle for each wire
-    // draw_rectangle(x, y, width, height, color);
+void update_shape();
+
+void main()
+{
+  P1DIR |= LED; /**< Green led on when CPU on */
+  P1OUT |= LED;
+  configureClocks();
+  lcd_init();
+  switch_init();
+  
+  enableWDTInterrupts(); /**< enable periodic interrupt */
+  or_sr(0x8); /**< GIE (enable interrupts) */
+  
+  clearScreen(COLOR_BLUE);
+  while (1) { /* forever */
+    if (redrawScreen && !exploded) {
+      redrawScreen = 0;
+      update_shape();
+    }
+    P1OUT &= ~LED; /* led off */
+    or_sr(0x10); /**< CPU OFF */
+    P1OUT |= LED; /* led on */
+  }
 }
 
-void remove_wire(unsigned char wire) {
-    used_wires[wire] = 1;  // Mark the wire as used
-    // Clear the rectangle representing this wire
-    // clear_rectangle(wire_position_x, wire_position_y, wire_width, wire_height);
-    display_message("Wire Removed!");
+void
+screen_update_hourglass()
+{
+  static unsigned char row = screenHeight / 2, col = screenWidth / 2;
+  static char lastStep = 0;
+  
+  if (step == 0 || (lastStep > step)) {
+    clearScreen(COLOR_BLUE);
+    lastStep = 0;
+  } else {
+    for (; lastStep <= step; lastStep++) {
+      int startCol = col - lastStep;
+      int endCol = col + lastStep;
+      int width = 1 + endCol - startCol;
+      
+      // a color in this BGR encoding is BBBB BGGG GGGR RRRR
+      unsigned int color = (blue << 11) | (green << 5) | red;
+      
+      fillRectangle(startCol, row+lastStep, width, 1, color);
+      fillRectangle(startCol, row-lastStep, width, 1, color);
+    }
+  }
+}  
+
+void
+update_shape()
+{
+  screen_update_ball();
+  screen_update_hourglass();
 }
 
-void red_boom() {
-    // Display red boom screen
-    // fill_screen(RED);
-    display_message("BOOM!");
-    while (1);  // Stop game after explosion
-}
-
-void display_message(const char *message) {
-    // Placeholder for displaying a message on the LCD
-    // lcd_print(message);
-    __no_operation();
+void
+__interrupt_vec(PORT2_VECTOR) Port_2(){
+  if (P2IFG & SWITCHES) { /* did a button cause this interrupt? */
+    P2IFG &= ~SWITCHES; /* clear pending sw interrupts */
+    switch_interrupt_handler(); /* single handler for all switches */
+  }
 }
