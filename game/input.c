@@ -1,5 +1,6 @@
-#include "input.h"
+
 #include "lcdgame.h"
+#include "input.h"
 #include "switches.h"
 
 // Process user input to check against the expected sequence
