@@ -8,6 +8,8 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
+load: $(TARGET)
+    mspdebug rf2500 "prog $(TARGET)"
 
 clean:
 	rm -f $(OBJS) $(TARGET)
