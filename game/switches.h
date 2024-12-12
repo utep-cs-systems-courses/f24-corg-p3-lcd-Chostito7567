@@ -7,6 +7,8 @@
 #define SW3 BIT2
 #define SW4 BIT3
 
+extern int switches; 
+
 void switch_init();
 void switch_interrupt_handler();
 
