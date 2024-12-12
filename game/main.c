@@ -1,20 +1,22 @@
 #include <msp430.h>
-#include "lcdgame.h"
-#include "input.h"
-#include "libTimer.h"
+#include "lcdutils.h"
 
-void main() {
-    configureClocks();       // Initialize system clocks
-    lcd_game_init();         // Initialize LCD game
-    input_init();            // Initialize input handling
-
-    unsigned int sequence[4] = {1, 2, 3, 4}; // Example sequence
-    while (1) {
-        int result = input_process(sequence, 4);
-        if (result == 1) {
-            lcd_game_display_correct();
-        } else if (result == 0) {
-            lcd_game_display_incorrect();
-        }
+void clearScreen(u_int color) {
+    lcd_setArea(0, 0, screenWidth - 1, screenHeight - 1);
+    for (int i = 0; i < screenWidth * screenHeight; i++) {
+        lcd_writeColor(color);
     }
+}
+
+int main() {
+    WDTCTL = WDTPW | WDTHOLD; // Stop watchdog timer
+    lcd_init();               // Initialize the LCD
+    clearScreen(COLOR_BLACK); // Clear screen to black
+
+    lcd_setArea(30, 30, 60, 60); // Draw a green square
+    for (int i = 0; i < 900; i++) {
+        lcd_writeColor(COLOR_GREEN);
+    }
+
+    while (1);
 }
