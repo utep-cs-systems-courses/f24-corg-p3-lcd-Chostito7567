@@ -1,36 +1,16 @@
 #include <msp430.h>
-#include "lcdgame.h"
-#include "input.h"
+#include "led.h"
+#include "buzzer.h"
 #include "switches.h"
-#include "lcdutils.h"
-
-unsigned int sequence[4] = {1, 2, 3, 4};
+#include "libTimer.h"
+#include "stateMachines.h"
 
 void main() {
-    configureClocks();
-    lcd_game_init();
-    input_init();
-    switch_init();
+    configureClocks();  // Set up the clock system
+    led_init();         // Initialize LEDs
+    buzzer_init();      // Initialize buzzer
+    switch_init();      // Initialize switches
 
-    enableWDTInterrupts(); // Watchdog timer for periodic tasks
-
-    or_sr(0x18); // CPU off, GIE on
-}
-
-void __interrupt_vec(PORT2_VECTOR) Port_2() {
-    if (P2IFG & SWITCHES) { // Check for interrupts from switches
-        P2IFG &= ~SWITCHES; // Clear pending flags
-        switch_interrupt_handler(); // Handle switches
-    }
-}
-
-void __interrupt_vec(WDT_VECTOR) WDT() {
-    int result = input_process(sequence, 4);
-    if (result == 1) {
-        lcd_game_display_correct();
-    } else if (result == 0) {
-        lcd_game_display_incorrect();
-    } else {
-        lcd_game_display();
-    }
+    enableWDTInterrupts(); // Enable Watchdog Timer for state machine
+    or_sr(0x18);           // CPU off, GIE on
 }
