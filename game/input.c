@@ -3,6 +3,8 @@
 #include "lcdgame.h"  // For sequence handling
 #include <msp430.h>
 
+extern int switches;
+
 void input_init() {
     // Initialization logic for input (if needed)
 }
