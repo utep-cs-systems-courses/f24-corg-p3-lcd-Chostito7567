@@ -15,9 +15,12 @@ static char switch_update_interrupt_sense() {
 
 void switch_init() {
     P2REN |= SWITCHES;  // Enable resistors for switches
-    P2IE |= SWITCHES;   // Enable interrupts from switches
-    P2OUT |= SWITCHES;  // Pull-ups for switches
-    P2DIR &= ~SWITCHES; // Set switches' bits for input
+    P2OUT |= SWITCHES;  // Set pull-ups for switches
+    P2DIR &= ~SWITCHES; // Set switches as inputs
+    P2IES |= SWITCHES;  // Detect high-to-low transitions
+    P2IE |= SWITCHES;   // Enable interrupts for switches
+    P2IFG &= ~SWITCHES; // Clear pending interrupts
+
     switch_update_interrupt_sense();
 }
 
