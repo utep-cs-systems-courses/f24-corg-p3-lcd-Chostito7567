@@ -1,15 +1,20 @@
-CC = msp430-elf-gcc
-CFLAGS = -mmcu=msp430g2553 -I./h
-SRCS = main.c stateMachines.c led.c switches.c buzzer.c libTimer.c
-OBJS = $(SRCS:.c=.o)
+CC = msp430-gcc
+CFLAGS = -mmcu=msp430g2553 -Os
 TARGET = main.elf
+
+SRC = main.c lcdutils.c lcddraw.c switches.c buzzer.c stateMachines.c
+OBJ = $(SRC:.c=.o)
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
-load: $(TARGET)
-    mspdebug rf2500 "prog $(TARGET)"
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJ) $(TARGET)
+
+load: $(TARGET)
+	mspdebug rf2500 "prog $(TARGET)"
