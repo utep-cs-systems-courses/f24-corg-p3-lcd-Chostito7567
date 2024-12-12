@@ -4,7 +4,7 @@
 #include "buzzer.h"
 
 char switch_state_down, switch_state_changed;
-
+int switches = 0;
 static char switch_update_interrupt_sense() {
     char p2val = P2IN;
     P2IES |= (p2val & SWITCHES);   // Sense high-to-low
