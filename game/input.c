@@ -1,24 +1,42 @@
-#include "input.h"
-#include "buzzer.h"
-#include "led.h"
 #include <msp430.h>
+#include "input.h"
+#include "switches.h"
 
-static unsigned int user_input[4];  // Array to store the user's inputs
-static int input_index = 0;         // Index to track user input progress
-static int sequence_match = 1;      // Flag to indicate sequence correctness
+// Global variables to track the input sequence
+int current_index = 0;
+extern int number_sequence[]; // Array of numbers to match
 
-void input_init() {
-    input_index = 0;
-    sequence_match = 1;  // Reset sequence match status
-    for (int i = 0; i < 4; i++) {
-        user_input[i] = 0;
+// Process user inputs
+void input_process() {
+    if (switches & SW1) { // If SW1 is pressed
+        if (number_sequence[current_index] == 1) {
+            current_index++; // Correct input, move to the next
+        } else {
+            current_index = 0; // Reset index on incorrect input
+        }
+    } else if (switches & SW2) { // If SW2 is pressed
+        if (number_sequence[current_index] == 2) {
+            current_index++;
+        } else {
+            current_index = 0;
+        }
+    } else if (switches & SW3) { // If SW3 is pressed
+        if (number_sequence[current_index] == 3) {
+            current_index++;
+        } else {
+            current_index = 0;
+        }
+    } else if (switches & SW4) { // If SW4 is pressed
+        if (number_sequence[current_index] == 4) {
+            current_index++;
+        } else {
+            current_index = 0;
+        }
+    }
+    
+    // If all inputs are correct
+    if (current_index >= 4) { // Assuming sequence length is 4
+        current_index = 0; // Reset for the next round
+        lcd_game_generate_sequence(); // Generate new sequence
     }
 }
-
-int input_process(unsigned int* expected_sequence, int sequence_length) {
-    char p2val = P2IN;  // Read button inputs
-
-    // Detect button presses
-    if (!(p2val & SW1)) {
-        user_input[input_index++] = 1;
-    } else
