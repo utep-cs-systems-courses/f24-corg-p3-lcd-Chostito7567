@@ -1,7 +1,6 @@
 #include "input.h"
 #include "switches.h"
 
-// Function to process input
 int input_process(unsigned int *expected_sequence, int sequence_length) {
     static int user_input_index = 0;
 
@@ -29,12 +28,8 @@ int input_process(unsigned int *expected_sequence, int sequence_length) {
 
     if (user_input_index == sequence_length) {
         user_input_index = 0;
-        return 1; // Sequence correct
+        return 1; // Success
     }
 
     return -1; // Waiting for input
-}
-
-void input_init() {
-    // Initialization for input
 }
