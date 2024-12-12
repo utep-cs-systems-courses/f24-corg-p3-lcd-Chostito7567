@@ -1,32 +1,20 @@
-# Makefile for MSP430 wire game project
+# makfile configuration
+CPU             	= msp430g2553
+CFLAGS          	= -mmcu=${CPU} -Os -I../h
+LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include/ 
 
-# Compiler and flags
-CC = msp430-gcc
-CFLAGS = -mmcu=msp430g2553 -O2 -Wall
+#switch the compiler (for the internal make rules)
+CC              = msp430-elf-gcc
+AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
-# Debugger and programmer
-LOADER = mspdebug
-PROGRAMMER = rf2500  # Update this to your specific programmer (e.g., tilib, usb)
+all:wakedemo.elf
 
-# Targets
-TARGET = wire_game
-SOURCES = main.c
+#additional rules for files
+main.elf: ${COMMON_OBJECTS} main.o wdt_handler.o
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ -lTimer -lLcd 
 
-# Default target
-all: $(TARGET).elf
+load: main.elf
+	msp430loader.sh $^
 
-# Rule to build the ELF file
-$(TARGET).elf: $(SOURCES)
-	$(CC) $(CFLAGS) -o $@ $^
-
-# Clean target to remove generated files
 clean:
-	rm -f $(TARGET).elf
-
-# Load target to flash the program to the MSP430
-load: $(TARGET).elf
-	$(LOADER) $(PROGRAMMER) "prog $(TARGET).elf"
-
-# Debugging target (optional, for stepping through the program)
-debug: $(TARGET).elf
-	$(LOADER) $(PROGRAMMER) "load $(TARGET).elf"
+	rm -f *.o *.elf
