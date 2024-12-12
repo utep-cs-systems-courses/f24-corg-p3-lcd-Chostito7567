@@ -1,5 +1,6 @@
 #ifndef SWITCHES_INCLUDED
 #define SWITCHES_INCLUDED
+#include <msp430.h>
 
 #define SW1 BIT0
 #define SW2 BIT1
