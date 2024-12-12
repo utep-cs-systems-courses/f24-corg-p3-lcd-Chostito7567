@@ -5,7 +5,7 @@
 #include <libTimer.h>
 #include <lcdutils.h>
 #include <lcddraw.h>
-#include <switches.h>
+#include "switches.h"
 
 
 /** Initializes everything, clears the screen, draws "hello" and the circle */
