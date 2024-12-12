@@ -1,13 +1,12 @@
 #include "switches.h"
-#include <msp430.h>
 
-char switches;
+unsigned int switches; // Define the switches variable
 
 void switch_init() {
-    P2REN |= SWITCHES; // Enable resistors for switches
-    P2IE |= SWITCHES;  // Enable interrupts from switches
-    P2OUT |= SWITCHES; // Pull-ups for switches
-    P2DIR &= ~SWITCHES; // Set switches as input
+    P2REN |= SWITCHES;  // Enable resistors for switches
+    P2IE |= SWITCHES;   // Enable interrupts from switches
+    P2OUT |= SWITCHES;  // Pull-up resistors for switches
+    P2DIR &= ~SWITCHES; // Set switches as inputs
 }
 
 void switch_interrupt_handler() {
