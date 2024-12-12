@@ -2,7 +2,6 @@
 #define BUZZER_H
 
 void buzzer_init();
-void play_correct_buzzer();
-void play_incorrect_buzzer();
+void buzzer_set_period(short cycles);
 
 #endif // BUZZER_H
