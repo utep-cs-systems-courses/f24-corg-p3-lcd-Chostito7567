@@ -1,73 +1,31 @@
-#include <stdint.h>
-#include <stdio.h>  // For sprintf()
-#include "../lcdLib/lcddraw.h"
-#include "../lcdLib/lcdutils.h"
+/** \file lcddemo.c
+ *  \brief A simple demo that draws a string and circle
+ */
 
-// Typedefs for compatibility with lcdLib
-typedef unsigned char u_char;
-typedef unsigned int u_int;
+#include <libTimer.h>
+#include <lcdutils.h>
+#include <lcddraw.h>
+#include <p2switches.h>
 
-// Game variables
-int lives = 3;  // Number of lives
-int score = 0;  // Player's score
 
-// Initializes the game and displays the start screen
-void lcd_game_init() {
-    clearScreen(COLOR_BLACK);
-    drawString5x7(10, 5, "Game Start!", COLOR_WHITE, COLOR_BLACK);
-}
+/** Initializes everything, clears the screen, draws "hello" and the circle */
+void main()
+{
+  configureClocks();
+  lcd_init();
+  p2sw_init(15);
+  or_sr(0x8);			/* GIE (enable interrupts) */
+  u_char width = screenWidth, height = screenHeight;
 
-// Displays the player's score on the screen
-void lcd_display_score() {
-    char scoreText[16];
-    sprintf(scoreText, "Score: %d", score);
-    drawString5x7(10, 20, scoreText, COLOR_WHITE, COLOR_BLACK);
-}
+  clearScreen(COLOR_BLUE);
 
-// Displays the player's remaining lives on the screen
-void lcd_display_lives() {
-    char livesText[16];
-    sprintf(livesText, "Lives: %d", lives);
-    drawString5x7(10, 30, livesText, COLOR_WHITE, COLOR_BLACK);
-}
-
-// Displays the current prompt on the screen
-void lcd_display_prompt(char prompt) {
-    clearScreen(COLOR_BLACK);  // Clear the screen for the next prompt
-    lcd_display_score();
-    lcd_display_lives();
-
-    if (prompt == 'w') {
-        drawString5x7(50, 50, "UP", COLOR_YELLOW, COLOR_BLACK);
-    } else if (prompt == 's') {
-        drawString5x7(50, 50, "DOWN", COLOR_YELLOW, COLOR_BLACK);
-    } else if (prompt == 'a') {
-        drawString5x7(50, 50, "LEFT", COLOR_YELLOW, COLOR_BLACK);
-    } else if (prompt == 'd') {
-        drawString5x7(50, 50, "RIGHT", COLOR_YELLOW, COLOR_BLACK);
-    } else if (prompt == '?') {
-        drawString5x7(50, 50, "?", COLOR_RED, COLOR_BLACK);  // Wildcard
-    }
-}
-
-// Handles correct input
-void lcd_correct_input() {
-    score++;  // Increment the score
-    drawString5x7(10, 40, "Correct!", COLOR_GREEN, COLOR_BLACK);
-}
-
-// Handles incorrect input
-void lcd_incorrect_input() {
-    lives--;  // Decrement lives
-    drawString5x7(10, 40, "Incorrect!", COLOR_RED, COLOR_BLACK);
-}
-
-// Displays the game-over screen
-void lcd_game_over() {
-    clearScreen(COLOR_BLACK);
-    drawString5x7(30, 50, "GAME OVER", COLOR_RED, COLOR_BLACK);
-
-    char finalScore[16];
-    sprintf(finalScore, "Score: %d", score);  // Show final score
-    drawString5x7(40, 80, finalScore, COLOR_WHITE, COLOR_BLACK);
+  drawString5x7(10,10, "switches:", COLOR_GREEN, COLOR_BLUE);
+  while (1) {
+    u_int switches = p2sw_read(), i;
+    char str[5];
+    for (i = 0; i < 4; i++)
+      str[i] = (switches & (1<<i)) ? '-' : '0'+i;
+    str[4] = 0;
+    drawString5x7(20,20, str, COLOR_GREEN, COLOR_BLUE);
+  } 
 }
