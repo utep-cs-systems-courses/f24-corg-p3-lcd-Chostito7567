@@ -23,3 +23,6 @@ $(TARGET): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARGET)
+
+load: $(TARGET)
+	mspdebug rf2500 "prog $(TARGET)"
