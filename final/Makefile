@@ -11,8 +11,8 @@ all: main.elf
 main.elf: ${COMMON_OBJECTS}
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-load: main.elf
-	msp430loader.sh main.elf
+lcdutils.o: lcdutils.c lcdutils.h
+	${CC} ${CFLAGS} -c lcdutils.c -o lcdutils.o
 
 clean:
 	rm -f *.o *.elf
