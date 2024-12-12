@@ -24,5 +24,3 @@ void led_update() {
         led_changed = 0; // Reset flag after update
     }
 }
-
-}
