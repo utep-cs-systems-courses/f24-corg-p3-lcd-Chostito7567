@@ -1,4 +1,4 @@
-COMMON_OBJECTS = stateMachines.o led.o wdInterruptHandler.o switches.o buzzer.o lcdgame.o lcdutils.o lcddraw.o
+COMMON_OBJECTS = stateMachines.o led.o wdInterruptHandler.o switches.o buzzer.o lcdgame.o lcddraw.o
 CPU = msp430g2553
 CFLAGS = -mmcu=${CPU} -I../h
 LDFLAGS = -L/opt/ti/msp430_gcc/include
@@ -11,8 +11,8 @@ all: main.elf
 main.elf: ${COMMON_OBJECTS}
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-lcdutils.o: lcdutils.c lcdutils.h
-	${CC} ${CFLAGS} -c lcdutils.c -o lcdutils.o
+lcdgame.o: lcdgame.c lcdgame.h
+	${CC} ${CFLAGS} -c lcdgame.c -o lcdgame.o
 
 lcddraw.o: lcddraw.c lcddraw.h
 	${CC} ${CFLAGS} -c lcddraw.c -o lcddraw.o
