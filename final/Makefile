@@ -14,8 +14,9 @@ main.elf: ${COMMON_OBJECTS}
 lcdgame.o: lcdgame.c lcdgame.h
 	${CC} ${CFLAGS} -c lcdgame.c -o lcdgame.o
 
-lcddraw.o: lcddraw.c lcddraw.h
-	${CC} ${CFLAGS} -c lcddraw.c -o lcddraw.o
+lcddraw.o: path_to_file/lcddraw.c path_to_file/lcddraw.h
+	${CC} ${CFLAGS} -c path_to_file/lcddraw.c -o lcddraw.o
+
 
 clean:
 	rm -f *.o *.elf
