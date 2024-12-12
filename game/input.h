@@ -1,7 +1,9 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-void input_init();
-int input_process(unsigned int *expected_sequence, int sequence_length);
+#include "switches.h"
 
-#endif
+void input_init(); // Initialize input handling
+int input_process(unsigned int *expected_sequence, int sequence_length); // Process user input
+
+#endif // INPUT_H
