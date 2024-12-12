@@ -1,7 +1,8 @@
-#ifndef STATE_MACHINES_H
-#define STATE_MACHINES_H
+#ifndef stateMachine_included
+#define stateMachine_included
 
-void play_sequence();
-void check_input();
+void state_advance();
+char toggle_red();
+char toggle_green();
 
-#endif // STATE_MACHINES_H
+#endif // stateMachine_included
