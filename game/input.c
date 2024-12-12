@@ -1,4 +1,4 @@
-#include <msp430.h>
+#include "lcdgame.h"
 #include "input.h"
 #include "switches.h"
 
@@ -29,8 +29,8 @@ int input_process(unsigned int *expected_sequence, int sequence_length) {
 
     if (user_input_index == sequence_length) {
         user_input_index = 0;
-        return 1; // Success
+        return 1;
     }
 
-    return -1; // Waiting for input
+    return -1;
 }
