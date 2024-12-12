@@ -1,6 +1,7 @@
 #include "input.h"
 #include "switches.h" // For the `switches` variable
 #include "lcdgame.h"  // For sequence handling
+#include <msp430.h>
 
 void input_init() {
     // Initialization logic for input (if needed)
