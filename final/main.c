@@ -1,15 +1,26 @@
+
+
 #include <msp430.h>
-#include <libTimer.h>
-#include <lcdutils.h>
-#include <lcddraw.h>
-#include "lcdgame.h"
+#include "led.h"
+#include "stateMachines.h"
+#include "buzzer.h"
+#include "switches.h"
+#include "libTimer.h"
 
-void main() {
-    configureClocks();
-    lcd_init();
-    lcd_game_init();  // Replace with your custom init function if applicable
 
-    while (1) {
-        lcd_game_update();  // Replace with your game logic function
-    }
+void main()
+{
+    // Timer
+    configureClocks();          // Start Lib Timer
+
+    // Initialize 
+    switch_init();              // Setup Switches
+    buzzer_init();              // Call Speakers
+    led_init();                 // Call LEDs
+
+    // Watchdog
+    enableWDTInterrupts();      // Enable Watchdog Timer
+
+    // Power off CPU
+    or_sr(0x18);
 }
