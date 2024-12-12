@@ -41,6 +41,9 @@ lcddraw.o: lcddraw.c lcddraw.h lcdutils.h font-5x7.h
 lcdutils.o: lcdutils.c lcdutils.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
+font-5x7.o: font-5x7.c font-5x7.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
 # Load the program to the device
 load: main.elf
 	msp430loader.sh $^
