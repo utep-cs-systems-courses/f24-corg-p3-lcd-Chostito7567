@@ -26,5 +26,8 @@ switches.o: switches.c switches.h
 ../lcdLib/lcdutils.o: ../lcdLib/lcdutils.c ../lcdLib/lcdutils.h
 	${CC} ${CFLAGS} -c $< -o $@
 
+load: main.elf
+	msp430loader.sh main.elf
+
 clean:
 	rm -f *.o *.elf
