@@ -5,6 +5,7 @@
 #include "switches.h"
 #include "libTimer.h"
 #include "lcdgame.h"
+switch_init();
 
 void main() {
     configureClocks();          // Start Lib Timer
