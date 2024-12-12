@@ -1,28 +1,29 @@
-# Compiler and flags
-CC = msp430-gcc
-CFLAGS = -mmcu=msp430g2553 -Os
+COMMON_OBJECTS  =
+CPU             = msp430g2553
+CFLAGS          = -mmcu=${CPU} -I../h
+LDFLAGS		= -L/opt/ti/msp430_gcc/include
 
-# Source files
-SRCS = main.c lcdgame.c led.c buzzer.c switches.c stateMachines.c p2_interrupt_handler.c
-OBJS = $(SRCS:.c=.o)
+#switch the compiler (for the internal make rules)
+CC              = msp430-elf-gcc
+AS              = msp430-elf-as
 
-# Libraries
-LIBS = -L./lib -ltimer
+all: main.elf
+	(cd ../timerLib; make)
+#additional rules for files
+main.elf: ${COMMON_OBJECTS} main.c lcdgame.o stateMachines.o led.o wdInterruptHandler.o p2_interrupt_handler.o switches.o buzzer.o ../timerLib/libTimer.a
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-# Target executable
-TARGET = main.elf
-
-# Rules
-all: $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
-
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+load: main.elf
+	msp430loader.sh main.elf
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f -r *.o *.elf *shell* *shell*~ *~
+	(cd ../timerLib; make clean)
 
-load: $(TARGET)
-	mspdebug rf2500 "prog $(TARGET)"
+lcdgame.o: lcdgame.c lcdgame.h
+stateMachines.o: stateMachines.c stateMachines.h
+led.o: led.c led.h
+switches.o: switches.c switches.h
+buzzer.o: buzzer.c buzzer.h
+wdInterruptHandler.o: wdInterruptHandler.c
+p2_interrupt_handler.o: p2_interrupt_handler.c
