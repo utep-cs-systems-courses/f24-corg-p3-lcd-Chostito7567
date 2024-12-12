@@ -1,3 +1,4 @@
+#include <msp430.h>
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
