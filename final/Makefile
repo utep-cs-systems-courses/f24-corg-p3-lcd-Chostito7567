@@ -14,5 +14,11 @@ main.elf: ${COMMON_OBJECTS}
 lcdutils.o: lcdutils.c lcdutils.h
 	${CC} ${CFLAGS} -c lcdutils.c -o lcdutils.o
 
+lcddraw.o: lcddraw.c lcddraw.h
+	${CC} ${CFLAGS} -c lcddraw.c -o lcddraw.o
+
 clean:
 	rm -f *.o *.elf
+
+load: main.elf
+	mspdebug rf2500 "prog main.elf"
