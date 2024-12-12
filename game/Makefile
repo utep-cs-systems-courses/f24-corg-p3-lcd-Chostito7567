@@ -1,27 +1,20 @@
-# Configuration
-COMMON_OBJECTS = main.o lcdgame.o input.o stateMachines.o led.o buzzer.o switches.o wdInterruptHandler.o p2_interrupt_handler.o lcddraw.o lcdutils.o
-CPU = msp430g2553
-CFLAGS = -mmcu=${CPU} -I. -L../timerLib
-LDFLAGS = -L/opt/ti/msp430_gcc/include -L../timerLib
+COMMON_OBJECTS  = main.o stateMachines.o led.o switches.o buzzer.o input.o lcdgame.o lcddraw.o
+CPU             = msp430g2553
+CFLAGS          = -mmcu=${CPU} -I../h
+LDFLAGS         = -L/opt/ti/msp430_gcc/include -L../lib
 
-# Compiler and Assembler
-CC = msp430-elf-gcc
-AS = msp430-elf-as
+# Compiler and assembler
+CC              = msp430-elf-gcc
+AS              = msp430-elf-as
 
-# Main Target
+# Target to build the main program
 all: main.elf
 
 main.elf: ${COMMON_OBJECTS} ../timerLib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-# Object File Rules
+# Compile individual files
 main.o: main.c
-	${CC} ${CFLAGS} -c -o $@ $<
-
-lcdgame.o: lcdgame.c lcdgame.h
-	${CC} ${CFLAGS} -c -o $@ $<
-
-input.o: input.c input.h switches.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
 stateMachines.o: stateMachines.c stateMachines.h
@@ -30,33 +23,25 @@ stateMachines.o: stateMachines.c stateMachines.h
 led.o: led.c led.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
-buzzer.o: buzzer.c buzzer.h
-	${CC} ${CFLAGS} -c -o $@ $<
-
 switches.o: switches.c switches.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
-wdInterruptHandler.o: wdInterruptHandler.c
+buzzer.o: buzzer.c buzzer.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
-p2_interrupt_handler.o: p2_interrupt_handler.c
+input.o: input.c input.h switches.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
-lcddraw.o: lcddraw.c lcddraw.h font-5x7.h lcdutils.h
+lcdgame.o: lcdgame.c lcdgame.h lcddraw.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
-lcdutils.o: lcdutils.c lcdutils.h
+lcddraw.o: lcddraw.c lcddraw.h font-5x7.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
-# Cleaning Rule
-clean:
-	rm -f *.o *.elf
-	rm -f *~ *.bak
-
-# Loading Rule
+# Load the program to the device
 load: main.elf
 	msp430loader.sh $^
 
-# Timer Library
-../timerLib/libTimer.a:
-	(cd ../timerLib; make)
+# Clean the build directory
+clean:
+	rm -f *.o *.elf
