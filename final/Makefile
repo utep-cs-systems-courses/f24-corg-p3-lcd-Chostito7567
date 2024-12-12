@@ -20,7 +20,7 @@ clean:
 	rm -f -r *.o *.elf *shell* *shell*~ *~
 	(cd ../timerLib; make clean)
 
-lcdgame.o: lcdgame.c lcdgame.h
+lcdgame.o: lcdgame.c 
 stateMachines.o: stateMachines.c stateMachines.h
 led.o: led.c led.h
 switches.o: switches.c switches.h
