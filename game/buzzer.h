@@ -1,7 +1,7 @@
-#ifndef BUZZER_H
-#define BUZZER_H
+#ifndef buzzer_included
+#define buzzer_included
 
 void buzzer_init();
 void buzzer_set_period(short cycles);
 
-#endif // BUZZER_H
+#endif // buzzer_included
