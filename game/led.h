@@ -1,15 +1,13 @@
-#ifndef LED_H
-#define LED_H
-
-#include <msp430.h>
+#ifndef led_included
+#define led_included
 
 #define LED_RED BIT0
 #define LED_GREEN BIT6
-#define LED_BLUE BIT1
-#define LED_YELLOW BIT2
-#define LEDS (LED_RED | LED_GREEN | LED_BLUE | LED_YELLOW)
+#define LEDS (LED_RED | LED_GREEN)
 
 void led_init();
-void led_update(char led_state);
+void led_update();
 
-#endif // LED_H
+extern unsigned char led_changed, green_on, red_on, led_state;
+
+#endif // led_included
