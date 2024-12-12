@@ -3,7 +3,7 @@
  */
 #include "lcdutils.h"
 #include "lcddraw.h"
-
+#include "font-5x7.h"
 
 /** Draw single pixel at x,row 
  *
