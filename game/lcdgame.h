@@ -1,9 +1,14 @@
 #ifndef LCDGAME_H
 #define LCDGAME_H
 
-void lcd_game_display();  // Main function to display the square and numbers
-void lcd_draw_square();   // Function to draw a square
-void lcd_display_numbers(); // Function to display random numbers
-void lcd_game_init();
+#include "lcdutils.h"
+
+#define GAME_INIT 0
+#define GAME_DISPLAY 1
+#define GAME_WAIT_INPUT 2
+
+void lcd_game_init();    // Initialize the game
+void lcd_game_display(); // Display the random sequence
+void lcd_game_update();  // Update game state and logic
 
 #endif // LCDGAME_H
