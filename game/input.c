@@ -1,9 +1,8 @@
-
 #include "lcdgame.h"
 #include "input.h"
 #include "switches.h"
 
-// Function definition
+// Function definition for processing user input
 int input_process(unsigned int *expected_sequence, int sequence_length) {
     static int user_input_index = 0; // Tracks the current position in the sequence
 
