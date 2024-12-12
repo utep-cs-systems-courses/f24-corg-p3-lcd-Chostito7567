@@ -1,3 +1,4 @@
+#include <msp430.h>
 #include "input.h"
 #include "switches.h"
 
