@@ -1,45 +1,18 @@
 #include <msp430.h>
 #include "switches.h"
-#include "led.h"
-#include "buzzer.h"
 
-char switch_state_down, switch_state_changed;
-unsigned int switches = 0;
-
-static char switch_update_interrupt_sense() {
-    char p2val = P2IN;
-    P2IES |= (p2val & SWITCHES);   // Sense high-to-low
-    P2IES &= (p2val | ~SWITCHES);  // Sense low-to-high
-    return p2val;
-}
+unsigned int switches;
 
 void switch_init() {
-    P2REN |= SWITCHES;  // Enable resistors for switches
-    P2OUT |= SWITCHES;  // Set pull-ups for switches
-    P2DIR &= ~SWITCHES; // Set switches as inputs
-    P2IES |= SWITCHES;  // Detect high-to-low transitions
-    P2IE |= SWITCHES;   // Enable interrupts for switches
-    P2IFG &= ~SWITCHES; // Clear pending interrupts
-
-    switch_update_interrupt_sense();
+    P2DIR &= ~(SW1 | SW2 | SW3 | SW4); // Set switches as inputs
+    P2REN |= SW1 | SW2 | SW3 | SW4;    // Enable resistors
+    P2OUT |= SW1 | SW2 | SW3 | SW4;    // Set resistors to pull up
+    P2IE |= SW1 | SW2 | SW3 | SW4;     // Enable interrupts
+    P2IES |= SW1 | SW2 | SW3 | SW4;    // Trigger on falling edge
+    P2IFG &= ~(SW1 | SW2 | SW3 | SW4); // Clear interrupt flags
 }
 
-void switch_interrupt_handler() {
-    char p2val = switch_update_interrupt_sense();
-
-    if (!(p2val & SW1)) {
-        play_jingle1();
-        led_state = 0;
-    } else if (!(p2val & SW2)) {
-        play_jingle2();
-        led_state = 1;
-    } else if (!(p2val & SW3)) {
-        play_jingle3();
-        led_state = 2;
-    } else if (!(p2val & SW4)) {
-        play_jingle4();
-        led_state = 3;
-    }
-    led_changed = 1;
-    led_update();
+void __interrupt_vec(PORT2_VECTOR) Port_2() {
+    switches = P2IFG & (SW1 | SW2 | SW3 | SW4); // Record which switch was pressed
+    P2IFG &= ~(SW1 | SW2 | SW3 | SW4);          // Clear interrupt flags
 }
