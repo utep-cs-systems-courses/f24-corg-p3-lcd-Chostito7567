@@ -7,7 +7,7 @@ LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include/
 CC              = msp430-elf-gcc
 AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
-all:wakedemo.elf
+all:main.elf
 
 #additional rules for files
 main.elf: ${COMMON_OBJECTS} main.o wdt_handler.o
