@@ -22,7 +22,7 @@ clean:
 	rm -f -r *.o *.elf *shell* *shell*~ *~
 	(cd ../timerLib; make clean)
 	(cd ../lcdLib; make clean)
-
+input.o: input.c input.h
 lcdgame.o: lcdgame.c lcdgame.h
 stateMachines.o: stateMachines.c stateMachines.h
 led.o: led.c led.h
