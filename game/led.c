@@ -11,20 +11,18 @@ void led_init() {
 
 void led_update() {
     if (led_changed) {
-        switch (led_state) {
-        case 0:
-            P1OUT = LED_RED; // Only red LED on
-            break;
-        case 1:
-            P1OUT = LED_GREEN; // Only green LED on
-            break;
-        case 2:
-            P1OUT = LEDS; // Both LEDs on
-            break;
-        case 3:
-            P1OUT = 0; // Both LEDs off
-            break;
+        char ledFlags = 0;
+
+        // Update based on the current LED state
+        if (led_state == 0) {
+            ledFlags |= LED_RED;
+        } else if (led_state == 1) {
+            ledFlags |= LED_GREEN;
         }
-        led_changed = 0;
+
+        P1OUT = (P1OUT & ~LEDS) | ledFlags;
+        led_changed = 0; // Reset flag after update
     }
+}
+
 }
