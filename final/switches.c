@@ -3,6 +3,8 @@
 #include "led.h"
 #include "buzzer.h"
 
+unsigned int switches = 0;
+
 char switch_state_down, switch_state_changed;
 
 static char switch_update_interrupt_sense() {
