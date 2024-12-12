@@ -10,10 +10,10 @@ AS              = msp430-elf-as
 all: main.elf
 	(cd ../timerLib; make)
 
-# Main target to build the program
-main.elf: ${COMMON_OBJECTS} main.c stateMachines.o led.o wdInterruptHandler.o p2_interrupt_handler.o switches.o buzzer.o lcdgame.o input.o lcddraw.o ../timerLib/libTimer.a
+main.elf: ${COMMON_OBJECTS} main.c stateMachines.o led.o wdInterruptHandler.o p2_interrupt_handler.o switches.o buzzer.o lcdgame.o input.o lcddraw.o lcdutils.o ../timerLib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
+lcdutils.o: lcdutils.c lcdutils.h
 # Additional rules for files
 wdInterruptHandler.o: wdInterruptHandler.c
 p2_interrupt_handler.o: p2_interrupt_handler.c
