@@ -3,7 +3,7 @@
 
 #include "msp430.h"
 
-unsigned int p2sw_read();
+unsigned int reader();
 void p2sw_init(unsigned char mask);
 
 #endif // included
