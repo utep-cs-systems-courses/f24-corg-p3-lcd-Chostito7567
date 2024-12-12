@@ -1,37 +1,62 @@
-COMMON_OBJECTS  = stateMachines.o led.o switches.o buzzer.o p2_interrupt_handler.o wdInterruptHandler.o
-CPU             = msp430g2553
-CFLAGS          = -mmcu=${CPU} -I../h
-LDFLAGS         = -L/opt/ti/msp430_gcc/include
+# Configuration
+COMMON_OBJECTS = main.o lcdgame.o input.o stateMachines.o led.o buzzer.o switches.o wdInterruptHandler.o p2_interrupt_handler.o lcddraw.o lcdutils.o
+CPU = msp430g2553
+CFLAGS = -mmcu=${CPU} -I. -L../timerLib
+LDFLAGS = -L/opt/ti/msp430_gcc/include -L../timerLib
 
-# Compiler settings
-CC              = msp430-elf-gcc
-AS              = msp430-elf-as
+# Compiler and Assembler
+CC = msp430-elf-gcc
+AS = msp430-elf-as
 
-# All target
+# Main Target
 all: main.elf
 
-# Main ELF target
-main.elf: main.o lcdgame.o input.o ${COMMON_OBJECTS} ../timerLib/libTimer.a lcddraw.o lcdutils.o
+main.elf: ${COMMON_OBJECTS} ../timerLib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-# Object file dependencies
+# Object File Rules
 main.o: main.c
-lcdgame.o: lcdgame.c lcdgame.h lcdutils.h lcddraw.h font-5x7.h
-input.o: input.c input.h switches.h lcdutils.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
+lcdgame.o: lcdgame.c lcdgame.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
+input.o: input.c input.h switches.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
 stateMachines.o: stateMachines.c stateMachines.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
 led.o: led.c led.h
-switches.o: switches.c switches.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
 buzzer.o: buzzer.c buzzer.h
-p2_interrupt_handler.o: p2_interrupt_handler.c
+	${CC} ${CFLAGS} -c -o $@ $<
+
+switches.o: switches.c switches.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
 wdInterruptHandler.o: wdInterruptHandler.c
-lcddraw.o: lcddraw.c lcddraw.h font-5x7.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
+p2_interrupt_handler.o: p2_interrupt_handler.c
+	${CC} ${CFLAGS} -c -o $@ $<
+
+lcddraw.o: lcddraw.c lcddraw.h font-5x7.h lcdutils.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
 lcdutils.o: lcdutils.c lcdutils.h
+	${CC} ${CFLAGS} -c -o $@ $<
 
-# Load target
-load: main.elf
-	msp430loader.sh main.elf
-
-# Clean target
+# Cleaning Rule
 clean:
 	rm -f *.o *.elf
-	rm -f ../timerLib/*.o
+	rm -f *~ *.bak
+
+# Loading Rule
+load: main.elf
+	msp430loader.sh $^
+
+# Timer Library
+../timerLib/libTimer.a:
+	(cd ../timerLib; make)
