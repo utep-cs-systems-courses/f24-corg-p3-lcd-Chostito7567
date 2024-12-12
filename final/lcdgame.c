@@ -6,7 +6,7 @@
 #include <lcdutils.h>
 #include <lcddraw.h>
 #include "switches.h"
-
+#include "lcdgame.h"
 
 /** Initializes everything, clears the screen, draws "hello" and the circle */
 void screen()
