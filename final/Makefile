@@ -1,29 +1,25 @@
-COMMON_OBJECTS  =
-CPU             = msp430g2553
-CFLAGS          = -mmcu=${CPU} -I../h
-LDFLAGS         = -L/opt/ti/msp430_gcc/include
+# Compiler and flags
+CC = msp430-gcc
+CFLAGS = -mmcu=msp430g2553 -Os
 
-# Switch the compiler (for the internal make rules)
-CC              = msp430-elf-gcc
-AS              = msp430-elf-as
+# Source files
+SRCS = main.c lcdgame.c led.c buzzer.c switches.c stateMachines.c p2_interrupt_handler.c
+OBJS = $(SRCS:.c=.o)
 
-all: main.elf
+# Libraries
+LIBS = -L./lib -ltimer
 
-main.elf: ${COMMON_OBJECTS} main.c switchDisplay.o stateMachines.o led.o wdInterruptHandler.o p2_interrupt_handler.o switches.o buzzer.o ../timerLib/libTimer.a
-	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
+# Target executable
+TARGET = main.elf
 
-load: main.elf
-	msp430loader.sh main.elf
+# Rules
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f -r *.o *.elf *shell* *shell*~ *~
-	(cd ../timerLib; make clean)
-
-# Compile each source file into an object file
-switchDisplay.o: switchDisplay.c lcdutils.h lcddraw.h p2switches.h
-stateMachines.o: stateMachines.c stateMachines.h
-led.o: led.c led.h
-switches.o: switches.c switches.h
-buzzer.o: buzzer.c buzzer.h
-wdInterruptHandler.o: wdInterruptHandler.c
-p2_interrupt_handler.o: p2_interrupt_handler.c
+	rm -f $(OBJS) $(TARGET)
