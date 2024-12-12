@@ -17,8 +17,8 @@ main.o: main.c
 lcdgame.o: lcdgame.c lcdgame.h
     ${CC} ${CFLAGS} -c lcdgame.c -o lcdgame.o
 
-lcdLib/lcddraw.o: lcdLib/lcddraw.c lcdLib/lcddraw.h
-    ${CC} ${CFLAGS} -c lcdLib/lcddraw.c -o lcdLib/lcddraw.o
+lcddraw.o: lcdLib/lcddraw.c lcdLib/lcddraw.h
+    ${CC} ${CFLAGS} -c lcddraw.c -o lcddraw.o
 
 clean:
     rm -f *.o *.elf lcdLib/*.o
