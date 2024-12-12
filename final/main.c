@@ -1,25 +1,19 @@
-
-
-#include <msp430.h>
+#include <libTimer.h>
+#include "lcdutils.h"
+#include "lcddraw.h"
 #include "led.h"
-#include "stateMachines.h"
-#include "buzzer.h"
 #include "switches.h"
-#include "libTimer.h"
+#include "buzzer.h"
+#include "stateMachines.h"
 
-void main()
-{
-    // Timer
-    configureClocks();          // Start Lib Timer
+void main() {
+  configureClocks();
+  lcd_init();
+  led_init();
+  buzzer_init();
+  enableWDTInterrupts(); // Enable periodic interrupts
+  or_sr(0x8);            // Enable global interrupts
 
-    // Initialize 
-    switch_init();              // Setup Switches
-    buzzer_init();              // Call Speakers
-    led_init();                 // Call LEDs
-
-    // Watchdog
-    enableWDTInterrupts();      // Enable Watchdog Timer
-
-    // Power off CPU
-    or_sr(0x18);
+  // Call the screen function
+  screen();
 }
