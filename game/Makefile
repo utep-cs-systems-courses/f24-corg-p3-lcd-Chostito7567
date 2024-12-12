@@ -1,4 +1,4 @@
-COMMON_OBJECTS  = main.o stateMachines.o led.o switches.o buzzer.o input.o lcdgame.o lcddraw.o
+COMMON_OBJECTS  = main.o stateMachines.o led.o switches.o buzzer.o input.o lcdgame.o lcddraw.o lcdutils.o
 CPU             = msp430g2553
 CFLAGS          = -mmcu=${CPU} -I../h
 LDFLAGS         = -L/opt/ti/msp430_gcc/include -L../lib
@@ -35,7 +35,10 @@ input.o: input.c input.h switches.h
 lcdgame.o: lcdgame.c lcdgame.h lcddraw.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
-lcddraw.o: lcddraw.c lcddraw.h font-5x7.h
+lcddraw.o: lcddraw.c lcddraw.h lcdutils.h font-5x7.h
+	${CC} ${CFLAGS} -c -o $@ $<
+
+lcdutils.o: lcdutils.c lcdutils.h
 	${CC} ${CFLAGS} -c -o $@ $<
 
 # Load the program to the device
